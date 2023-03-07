@@ -1,0 +1,7 @@
+project_name: my_project              # Name of the parent directory
+num_replicas: 4                       # Number of replica dirs to be created within parent directory 
+system_type: MARTINI2-Bilayers        # System type - Currently support only MARTINI2-Bilayer systems
+md_engine: GROMACS                    # MD engine used for FLOPSS - Currently support only GROMACS
+cv:                        
+  name: foobar12                      # CV file prefix - This file will be used for further CV validation and usage
+  optional_arg: foo                   # CV file optional argument
