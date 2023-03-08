@@ -12,21 +12,50 @@ os.makedirs(parent_dir, exist_ok=True)
 
 # Create sub directories based on number of replicas
 for i in range(config['num_replicas']):
-    subdir = os.path.join(parent_dir, f'replica_{i}')
+    subdir = os.path.join(parent_dir, f'{i+1:02d}')
     os.makedirs(subdir, exist_ok=True)
 
     # Copy files based on system type
+
+    #  1. MARTINI2-Bilayers
     if config['system_type'] == 'MARTINI2-Bilayers':
         # Copy files from type1 folder to sub directory
-        shutil.copy('MARTINI2_Bilayer/*', subdir)
-
-    # For future expansions to other system type
+        shutil.copytree('systemTypes/MARTINI2_Bilayers', subdir, dirs_exist_ok=True)
+    # For future expansions to other system types
     elif config['system_type'] == 'type2':
         # Copy files from type2 folder to sub directory
-        shutil.copy('type2/abc.abc', subdir)
+        shutil.copytree('systemTypes/type2', subdir, dirs_exist_ok=True)
     else:
         # Handle unsupported system type
         print(f"Unsupported system type: {config['system_type']}")
+
+    # Copy files based on enhanced sampling method
+
+    #  1. Weighted Ensemble
+    if config['enhanced_sampling']['method'] == 'WE':
+        # Copy WESTPA1 specific files sub directory
+        if config['enhanced_sampling']['implementation'] == 'WESTPA1':
+            shutil.copytree('enhancedSampling/WE/WESTPA1', subdir, dirs_exist_ok=True)
+        # Copy WESTPA2 specific files sub directory
+        elif config['enhanced_sampling']['implementation'] == 'WESTPA2':
+            shutil.copytree('enhancedSampling/WE/WESTPA2', subdir, dirs_exist_ok=True)
+
+        # Copy type2 specific files sub directory : Future expansion
+        elif config['enhanced_sampling']['implementation'] == 'type2':
+            shutil.copytree('enhancedSampling/WE/type2', subdir, dirs_exist_ok=True)
+
+        else:
+            # Handle unsupported system type
+            print(f"Unsupported system type: {config['enhanced_sampling']['implementation']}")
+
+    # For future expansions to other enhanced sampling methods
+    elif config['enhanced_sampling']['method'] == 'type2':
+        # Copy type2 specific files sub directory : Future expansion
+        if config['enhanced_sampling']['implementation'] == 'ABC':
+            shutil.copytree('enhancedSampling/type2/ABC', subdir, dirs_exist_ok=True)
+    else:
+        # Handle unsupported enhanced sampling method
+        print(f"Unsupported enhanced sampling method: {config['enhanced_sampling']['method']}")
 
     # Copy common template files to sub directory
     shutil.copy('common/test1.txt', subdir)

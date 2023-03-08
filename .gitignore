@@ -127,3 +127,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# ignore the test dir
+my_project/
+
+# Ignore vim crums
+*.un*
+*.sw*
