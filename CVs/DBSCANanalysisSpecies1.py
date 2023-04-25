@@ -15,7 +15,8 @@ import argparse
 import numpy as np
 import miscFuncs.loosFuncs as lf
 
-def dbscanAnalysisSystem(fmodel, ftrajectory, flipidsList, fradius, min_samples=7):
+
+def dbscanAnalysisSpecies(fmodel, ftrajectory, flipidsList, fradius, min_samples=7):
 
     # Parsing the arguments into variables
     model = loos.createSystem(fmodel)
@@ -27,30 +28,39 @@ def dbscanAnalysisSystem(fmodel, ftrajectory, flipidsList, fradius, min_samples=
     # Converting model into dictionary
     lipidContainer, system, lipidList = lf.segs2pyDicts(model,
                                                         flipidsList)
-
     # Sanity Check
     if lipidList != rFileLipids:
         sys.exit("Lipids listed in --lipid_list and --r arguments are different.\n\
                 The order in which lipids listed in both files must be same too!")
 
-    totalNum = len(system)
-    totalFrames = len(trajectory)
-    clusterCount= np.zeros((totalFrames,))
-    clusterLipids2Total= np.zeros((totalFrames,))
-    coreLipids2Total = np.zeros((totalFrames,))
-    outlierLipids2Total = np.zeros((totalFrames,))
-    silhouette_CoefficentDict = {}
+    if __name__ == "__main__":
+        pass
+    else:
+        numClustersDict = {}
+        core2TotalLipidsDict = {}
+        clust2TotalLipidsDict = {}
+        outlier2TotalLipidsDict = {}
+        meanCorePerClusterDict = {}
+        stdCorePerClusterDict = {}
+        meanLipidsPerClusterDict = {}
+        stdLipidsPerClusterDict = {}
+        silhouette_CoefficentDict = {}
+        frameCounter = 0
 
-    frameCounter = 0
     for frame in trajectory:
 
         box = frame.periodicBox()
 
         # Initializing key Counter
         C = 0
-        coreCount = 0
-        boundaryCount = 0
-        outlierCount = 0
+        numClusters = []
+        core2TotalLipids = []
+        clust2TotalLipids = []
+        outlier2TotalLipids = []
+        meanCorePerCluster = []
+        stdCorePerCluster = []
+        meanLipidsPerCluster = []
+        stdLipidsPerCluster = []
         silhouette_Coefficent = []
 
         # Extracting lipids to calculate centroids from the container dict
@@ -59,7 +69,8 @@ def dbscanAnalysisSystem(fmodel, ftrajectory, flipidsList, fradius, min_samples=
             # Collecting radius cutoff from rFile
             rCut = float(rAvgLipids[C])
             keyCoreLipids = []
-            keyBoundaryLipids = []
+            keyClusterLipids = []
+            num = len(value)
 
             Up, Lo = lf.leafletLipidSeparator(value)
             nClustUp, nCoreUp, nBoundUp, nNoiseUp, silhoUp = lf.lsDBSCAN(Up,
@@ -68,7 +79,7 @@ def dbscanAnalysisSystem(fmodel, ftrajectory, flipidsList, fradius, min_samples=
                                                                         box,
                                                                         True)
             keyCoreLipids.extend(nCoreUp)
-            keyBoundaryLipids.extend(nBoundUp)
+            keyClusterLipids.extend(np.add(nCoreUp, nBoundUp))
 
             nClustLo, nCoreLo, nBoundLo, nNoiseLo, silhoLo = lf.lsDBSCAN(Lo,
                                                                         rCut,
@@ -76,38 +87,58 @@ def dbscanAnalysisSystem(fmodel, ftrajectory, flipidsList, fradius, min_samples=
                                                                         box,
                                                                         True)
             keyCoreLipids.extend(nCoreLo)
-            keyBoundaryLipids.extend(nBoundLo)
+            keyClusterLipids.extend(np.add(nCoreLo, nBoundLo))
+
+            numClusters.append(nClustUp + nClustLo)
 
             # Worst Silhouette Coefficent of both
             silhouette_Coefficent.append(min(silhoUp, silhoLo))
 
-            clusterCount[frameCounter] += (nClustUp + nClustLo)
-            coreCount += np.sum(keyCoreLipids)
-            boundaryCount += np.sum(keyBoundaryLipids)
-            outlierCount += (nNoiseUp + nNoiseLo)
+            core2TotalLipids.append((np.sum(keyCoreLipids))/num)
+            clust2TotalLipids.append((np.sum(keyClusterLipids))/num)
+            outlier2TotalLipids.append((nNoiseUp + nNoiseLo)/num)
+
+            meanCorePerCluster.append(np.mean(keyCoreLipids))
+            stdCorePerCluster.append(np.std(keyCoreLipids))
+            meanLipidsPerCluster.append(np.mean(keyClusterLipids))
+            stdLipidsPerCluster.append(np.std(keyClusterLipids))
 
             # Updating key Counter
             C += 1
 
-        coreLipids2Total[frameCounter] = coreCount/totalNum
-        clusterLipids2Total[frameCounter] = (coreCount+boundaryCount)/totalNum
-        outlierLipids2Total[frameCounter] = outlierCount/totalNum
-        silhouette_CoefficentDict[frameCounter] = silhouette_Coefficent
-
         if __name__ == "__main__":
-            print(clusterCount[frameCounter],
-                coreLipids2Total[frameCounter],
-                clusterLipids2Total[frameCounter],
-                outlierLipids2Total[frameCounter],
+            print("\t".join(map(str, numClusters)),
+                "\t".join(map(str, core2TotalLipids)),
+                "\t".join(map(str, clust2TotalLipids)),
+                "\t".join(map(str, outlier2TotalLipids)),
+                "\t".join(map(str, meanCorePerCluster)),
+                "\t".join(map(str, stdCorePerCluster)),
+                "\t".join(map(str, meanLipidsPerCluster)),
+                "\t".join(map(str, stdLipidsPerCluster)),
                 "\t".join(map(str, silhouette_Coefficent)))
+        else:
+            numClustersDict[frameCounter] = numClusters
+            core2TotalLipidsDict[frameCounter] = core2TotalLipids
+            clust2TotalLipidsDict[frameCounter] = clust2TotalLipids
+            outlier2TotalLipidsDict[frameCounter] = outlier2TotalLipids
+            meanCorePerClusterDict[frameCounter] = meanCorePerCluster
+            stdCorePerClusterDict[frameCounter] = stdCorePerCluster
+            meanLipidsPerClusterDict[frameCounter] = meanLipidsPerCluster
+            stdLipidsPerClusterDict[frameCounter] = stdLipidsPerCluster
+            silhouette_CoefficentDict[frameCounter] = silhouette_Coefficent
+            frameCounter += 1
 
-        frameCounter += 1
+    return(numClustersDict,
+           core2TotalLipidsDict,
+           clust2TotalLipidsDict,
+           outlier2TotalLipidsDict,
+           meanCorePerClusterDict,
+           stdCorePerClusterDict,
+           meanLipidsPerClusterDict,
+           stdLipidsPerClusterDict,
+           silhouette_CoefficentDict)
 
-    return(clusterCount,
-        coreLipids2Total,
-        clusterLipids2Total,
-        outlierLipids2Total,
-        silhouette_CoefficentDict)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -128,16 +159,16 @@ if __name__ == "__main__":
     # Printing out header for output file
     headerList = lf.seg2pyList(args.lipidsList)
     header = "# " + " ".join(sys.argv)
-    header2 = "# System consisting of species :\t " + "\t".join(headerList)
-    header3 = "# Cluster-count\tCore lipid to total lipid\t\
-        Cluster lipids to total lipids\t\
-        Outlier lipids to total lipids\t\
-        Silhouette Coefficent for lipid species"
+    header2 = "# Individual Species Contribution :\t " + "\t".join(headerList)
+    header3 = "# Cluster-count\tCore to Total Lipids\tCluster lipids to\
+            Total Lipids\tOutliers To Total Lipids\tMean Core lipids per cluster\
+            \tSTD Core lipids per cluster\t Mean lipids per cluster\t STD lipids \
+            per cluster\t Silhouette Coefficent"
     print(header, flush=True)
     print(header2, flush=True)
     print(header3, flush=True)
 
-    dbscanAnalysisSystem(fmodel=args.model,
+    dbscanAnalysisSpecies(fmodel=args.model,
                          ftrajectory=args.trajectory,
                          flipidsList=args.lipidsList,
                          fradius=args.radius)
