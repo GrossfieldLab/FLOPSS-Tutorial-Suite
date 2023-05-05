@@ -34,7 +34,8 @@ fi
 # Based on David LeBard's suggestion to make WESTPA use N GPUs on machine, 1
 # per job.
 
-actual_gid=$(($WM_PROCESS_INDEX % 2))
+N_GPU=2  # Change as necessary : Currently optimized for K20 Boxes in CIRC
+actual_gid=$(($WM_PROCESS_INDEX % $N_GPU))
 export CUDA_VISIBLE_DEVICES=$actual_gid
 
 ######################## Set up for running the dynamics #######################
