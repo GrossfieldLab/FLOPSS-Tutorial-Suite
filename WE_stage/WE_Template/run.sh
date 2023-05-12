@@ -22,7 +22,6 @@
 set -x
 
 # Make sure environment is set else exit
-cd $SLURM_SUBMIT_DIR
 source env.sh || exit 1
 
 # Print out a sorted list of all the environmental variables
