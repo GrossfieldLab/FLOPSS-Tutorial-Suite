@@ -69,7 +69,7 @@ if [ "$WEST_CURRENT_SEG_INITPOINT_TYPE" = "SEG_INITPOINT_CONTINUES" ]; then
 
 elif [ "$WEST_CURRENT_SEG_INITPOINT_TYPE" = "SEG_INITPOINT_NEWTRAJ" ]; then
 
-    ln -sv $WEST_PARENT_DATA_REF ./parent.pdb
+    ln -sv $WEST_PARENT_DATA_REF/bstates.pdb ./parent.pdb
     # Initiation of a new trajectory; $WEST_PARENT_DATA_REF contains the reference to the
     # appropriate basis state or generated initial state
     gmx grompp -f md.mdp -o seg.tpr -c parent.pdb -r ref_system_centered.pdb \
