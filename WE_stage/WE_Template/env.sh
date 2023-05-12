@@ -5,6 +5,15 @@
 # This script defines environment variables that are used by other shell
 # scripts, both when setting up the simulation and when running the simulation.
 
+############################# GENERAL SETUP #################################### 
+
+# Purge all the existing modules
+# module purge
+
+# This is our local scratch, where we'll store files during the dynamics.
+export NODELOC=$LOCAL
+export USE_LOCAL_SCRATCH=1
+
 ################################ GROMACS #######################################
 
 # Loading the prebuilt GROMACS module - For Cluster Run 
