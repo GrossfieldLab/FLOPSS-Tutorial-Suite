@@ -110,7 +110,8 @@ cat $TEMP_SYSTEM | tail -n +4 | awk {'print $3'} > $WEST_PCOORD_RETURN
 ###############################################################################
 
 cp traj.dcd $WEST_TRAJECTORY_RETURN
+cp traj.pdd $WEST_TRAJECTORY_RETURN
 
 # Clean up
-rm -f *.mdp *.ndx *.top ref_system_centered.pdb *.gro traj.dcd traj.pdb $TEMP_SYSTEM
+rm -f *.mdp *.ndx *.top ref_system_centered.pdb *.gro $TEMP_SYSTEM
 rm -rf toppar
