@@ -106,11 +106,14 @@ python3 $WEST_SIM_ROOT/common_files/DBSCANanalysisSystem.py \
     --r $WEST_SIM_ROOT/common_files/avgRcutoff.dat > $TEMP_SYSTEM || exit 1
 
 cat $TEMP_SYSTEM | tail -n +4 | awk {'print $3'} > $WEST_PCOORD_RETURN
+cat $WEST_PCOORD_RETURN > pcoord.out
 
 ###############################################################################
 
 cp traj.dcd $WEST_TRAJECTORY_RETURN
 cp traj.pdd $WEST_TRAJECTORY_RETURN
+
+
 
 # Clean up
 rm -f *.mdp *.ndx *.top ref_system_centered.pdb *.gro $TEMP_SYSTEM

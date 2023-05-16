@@ -10,7 +10,6 @@ nstfout                  = 0
 nstlog                   = 50000
 nstenergy                = 50000
 nstxout-compressed       = 50000
-compressed-x-precision   = 100
 
 cutoff-scheme            = Verlet
 nstlist                  = 20
