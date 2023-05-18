@@ -111,7 +111,7 @@ cat $WEST_PCOORD_RETURN > pcoord.out
 ###############################################################################
 
 cp traj.dcd $WEST_TRAJECTORY_RETURN
-cp traj.pdd $WEST_TRAJECTORY_RETURN
+cp traj.pdb $WEST_TRAJECTORY_RETURN
 
 
 
