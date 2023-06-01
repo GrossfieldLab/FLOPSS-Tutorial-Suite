@@ -134,3 +134,6 @@ my_project/
 # Ignore vim crums
 *.un*
 *.sw*
+
+# Ignore postWE folder for now
+postWE_stage/

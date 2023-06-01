@@ -42,11 +42,14 @@ def segs2pyDicts(model1, segmentListFile):
     Inputs:
     model1 = LOOS processed model object. This is what you get as a resut of
             loos.createSystem(PATH/TO/FILE)
-    segmentListFile = Path to the file consisting of a list of segments to be
-    included in the dictionary
+    segmentListFile = Path to the file consisting of a list of segments OR a list
+            of segments to be included in the dictionary 
     '''
     # Getting segid details from external file
-    lipidList1 = seg2pyList(segmentListFile)
+    if type(segmentListFile) is list:
+        lipidList1 = segmentListFile
+    else:
+        lipidList1 = seg2pyList(segmentListFile)
 
     # Defining a container dict to store loos lipid AG separately
     container = {}
@@ -443,6 +446,13 @@ def rFileReader(rFile):
 
         where step is the step size in rscan
         start is the starting of rscan (All units in the unit of sim box)
+
+    In the newer version of CVs with just parameter file, we are repurposing
+    this into Input parameter File Format:
+        lipid1    avg1    neighbor1
+        lipid2    avg2    neighbor2
+        ....    ....    ....
+
     '''
     # Initializing output lists
     rlipidList = []
