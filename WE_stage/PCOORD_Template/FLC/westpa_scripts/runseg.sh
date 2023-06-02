@@ -103,7 +103,7 @@ python3 $WEST_SIM_ROOT/common_files/DBSCANanalysisSystem.py \
     --model $WEST_SIM_ROOT/bstates/model.psf \
     --traj traj.dcd \
     --lipid_list $WEST_SIM_ROOT/common_files/lipidList.dat \
-    --r $WEST_SIM_ROOT/common_files/avgRcutoff.dat > $TEMP_SYSTEM || exit 1
+    --parameter $WEST_SIM_ROOT/common_files/avgRcutoff.dat > $TEMP_SYSTEM || exit 1
 
 cat $TEMP_SYSTEM | tail -n +4 | awk {'print $3'} > $WEST_PCOORD_RETURN
 cat $WEST_PCOORD_RETURN > pcoord.out

@@ -26,8 +26,7 @@ TEMP_SYSTEM=$(mktemp)
 python3 $WEST_SIM_ROOT/common_files/DBSCANanalysisSystem.py \
     --model $WEST_SIM_ROOT/bstates/model.psf \
     --traj $WEST_STRUCT_DATA_REF/basis.pdb \
-    --lipid_list $WEST_SIM_ROOT/common_files/lipidList.dat \
-    --r $WEST_SIM_ROOT/common_files/avgRcutoff.dat > $TEMP_SYSTEM
+    --parameter $WEST_SIM_ROOT/common_files/avgRcutoff.dat > $TEMP_SYSTEM
 
 cat $TEMP_SYSTEM | tail -n +4 | awk {'print $3'} > $WEST_PCOORD_RETURN
 

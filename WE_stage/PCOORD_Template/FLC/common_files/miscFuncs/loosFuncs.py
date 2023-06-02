@@ -6,8 +6,25 @@ import loos.pyloos
 import numpy as np
 import math
 import sys
+import subprocess
 from sklearn.cluster import DBSCAN
 from sklearn.metrics import silhouette_score
+
+
+def seg2pyList(segmentListFile):
+    '''
+    Returns a python list consisting of all the segment AGs
+    given in the segmentListFile.
+    '''
+    # Getting segid details from external file
+    lipidList = []
+
+    with open(segmentListFile, 'r') as file:
+        for line in file:
+            temp1 = line.splitlines()
+            lipidList.append(temp1[0])
+
+    return(lipidList)
 
 
 def segs2pyDicts(model1, segmentListFile):
@@ -25,16 +42,14 @@ def segs2pyDicts(model1, segmentListFile):
     Inputs:
     model1 = LOOS processed model object. This is what you get as a resut of
             loos.createSystem(PATH/TO/FILE)
-    segmentListFile = Path to the file consisting of a list of segments to be
-    included in the dictionary
+    segmentListFile = Path to the file consisting of a list of segments OR a list
+            of segments to be included in the dictionary 
     '''
     # Getting segid details from external file
-    lipidList1 = []
-
-    with open(segmentListFile, 'r') as file:
-        for line in file:
-            temp1 = line.splitlines()
-            lipidList1.append(temp1[0])
+    if type(segmentListFile) is list:
+        lipidList1 = segmentListFile
+    else:
+        lipidList1 = seg2pyList(segmentListFile)
 
     # Defining a container dict to store loos lipid AG separately
     container = {}
@@ -50,7 +65,7 @@ def segs2pyDicts(model1, segmentListFile):
     return(container, system, lipidList1)
 
 
-def centroid2npArray(postSplitAG):
+def centroid2npArray(postSplitAG, inPlane=False):
     '''
     Returns an np 3N array of centroids - [x,y,z] - of all subunits in the
     post-split atomicGroup list. Advised to create the atomicGroup list by
@@ -66,7 +81,12 @@ def centroid2npArray(postSplitAG):
         centroids[i, 0] = centroid[0]
         centroids[i, 1] = centroid[1]
         centroids[i, 2] = centroid[2]
-    return centroids
+    if inPlane:
+        centCoord = np.c_[centroids[:, 0], centroids[:, 1]]
+    else:
+        centCoord = np.c_[centroids[:, 0], centroids[:, 1], centroids[:, 2]]
+
+    return centCoord
 
 
 def leafletLipidSeparator(lipids):
@@ -82,6 +102,34 @@ def leafletLipidSeparator(lipids):
         else:
             lipidLo.append(lipid)
     return (lipidUp, lipidLo)
+
+
+def areaPerLipid(fmodel, ftraj, lipidList):
+    '''
+    Note : Arguments are file paths (str) corresponding to fmodel and ftraj. 
+    Not loos.AG type model or traj
+
+    Returns a numpy array with area per lipid average value for each lipid
+    species given in the input lipidList argument by running loos tool
+    area_per_lipid using fmodel and ftraj files
+    '''
+    areaPerLipidSpecies = np.zeros(len(lipidList))
+    counter = 0
+    for lipid in lipidList:
+        # Command array
+        array_call = ['area_per_lipid', fmodel, ftraj, '--selection=segid == "{0}""'.format(lipid), '--brief=1']
+        # Execute command outside python
+        p = subprocess.Popen(array_call, stdout=subprocess.PIPE, text=True)
+        # Strip the new line at the end
+        output = (p.communicate()[0]).strip()
+        # Split the output str with \t as separator
+        splitOut = (output.split())
+        # Extract the third split (Average Area Per Lipid) and convert into float
+        meanAPLS = float(splitOut[2])
+        # Store the mean Area Per Lipid for respective species
+        areaPerLipidSpecies[counter] = meanAPLS
+        counter += 1
+    return (areaPerLipidSpecies)
 
 
 def bin2DRangeFromBox(box):
@@ -382,9 +430,27 @@ def rFileReader(rFile):
         2. List of avg. radius (Second coulmn)
         3. List of var. of radius (Third coulmn)
 
+    if rtype = "fixed"
+
     Input rFile format:
-        lipid1  avg1    var1
-        lipid2  avg2    var2
+        lipid1    avg1    var1
+        lipid2    avg2    var2
+        ....    ....    ....
+
+    if rtype = "rscan"
+
+    Input rFile format:
+        lipid1    step    start
+        lipid2    step    start
+        ....    ....    ....
+
+        where step is the step size in rscan
+        start is the starting of rscan (All units in the unit of sim box)
+
+    In the newer version of CVs with just parameter file, we are repurposing
+    this into Input parameter File Format:
+        lipid1    avg1    neighbor1
+        lipid2    avg2    neighbor2
         ....    ....    ....
 
     '''

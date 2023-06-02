@@ -15,23 +15,18 @@ import argparse
 import numpy as np
 import miscFuncs.loosFuncs as lf
 
-def dbscanAnalysisSystem(fmodel, ftrajectory, flipidsList, fradius, min_samples=7):
+def dbscanAnalysisSystem(fmodel, ftrajectory, fparam):
 
     # Parsing the arguments into variables
     model = loos.createSystem(fmodel)
     trajectory = loos.pyloos.Trajectory(ftrajectory, model)
 
     # Reading rFile
-    rFileLipids, rAvgLipids, rVarLipids = lf.rFileReader(fradius)
+    rFileLipids, rAvgLipids, minSample = lf.rFileReader(fparam)
 
     # Converting model into dictionary
     lipidContainer, system, lipidList = lf.segs2pyDicts(model,
-                                                        flipidsList)
-
-    # Sanity Check
-    if lipidList != rFileLipids:
-        sys.exit("Lipids listed in --lipid_list and --r arguments are different.\n\
-                The order in which lipids listed in both files must be same too!")
+                                                        rFileLipids)
 
     totalNum = len(system)
     totalFrames = len(trajectory)
@@ -54,10 +49,11 @@ def dbscanAnalysisSystem(fmodel, ftrajectory, flipidsList, fradius, min_samples=
         silhouette_Coefficent = []
 
         # Extracting lipids to calculate centroids from the container dict
-        for key, value in lipidContainer.items():
+        for value in lipidContainer.values():
 
             # Collecting radius cutoff from rFile
             rCut = float(rAvgLipids[C])
+            min_samples = int(minSample[C])
             keyCoreLipids = []
             keyBoundaryLipids = []
 
@@ -117,18 +113,15 @@ if __name__ == "__main__":
     parser.add_argument("--traj",
                         dest="trajectory",
                         help="Trajectory to use")
-    parser.add_argument("--lipid_list",
-                        dest="lipidsList",
-                        help="List of lipids in the system")
-    parser.add_argument("--r_file",
-                        dest="radius",
-                        help="File consisitng of radius of local region")
+    parser.add_argument("--parameter",
+                        dest="parameter",
+                        help="Parameter File")
     args = parser.parse_args()
 
     # Printing out header for output file
-    headerList = lf.seg2pyList(args.lipidsList)
+    headerList = lf.seg2pyList(args.parameter)
     header = "# " + " ".join(sys.argv)
-    header2 = "# System consisting of species :\t " + "\t".join(headerList)
+    header2 = "# Parameters : " + "\t".join(headerList)
     header3 = "# Cluster-count\tCore lipid to total lipid\t\
         Cluster lipids to total lipids\t\
         Outlier lipids to total lipids\t\
@@ -139,5 +132,4 @@ if __name__ == "__main__":
 
     dbscanAnalysisSystem(fmodel=args.model,
                          ftrajectory=args.trajectory,
-                         flipidsList=args.lipidsList,
-                         fradius=args.radius)
+                         fparam=args.parameter)
