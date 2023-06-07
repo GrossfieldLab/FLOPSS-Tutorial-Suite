@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 '''
 Example:
-    python3 DBSCANanalysis.py --model 1DIPC.psf
-                              --traj fixed_1DIPC_100.dcd
-                              --lipid_list lipidListNoCHOL.dat
-                              --r rFileNoChol.dat > test4
+    python3 DBSCANanalysisSystem.py --model 1DIPC.psf
+                                    --traj fixed_1DIPC_100.dcd
+                                    --parameter param.dat > output
 '''
 
 # Importing functional modules
