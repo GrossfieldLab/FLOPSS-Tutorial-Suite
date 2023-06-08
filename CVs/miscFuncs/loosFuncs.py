@@ -59,7 +59,7 @@ def segs2pyDicts(model1, segmentListFile):
     # Store lipid AG with unique lipid segid as keys
     for lipid1 in lipidList1:
         segment1 = loos.selectAtoms(model1, "segid == '{0}''".format(lipid1))
-        molecules1 = segment1.splitByMolecule()
+        molecules1 = segment1.splitByResidue()
         container[lipid1] = molecules1
         system.extend(molecules1)
     return(container, system, lipidList1)
