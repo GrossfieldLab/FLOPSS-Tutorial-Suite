@@ -15,9 +15,9 @@ for i in range(config['num_replicas']):
     subdir = os.path.join(parent_dir, f'{i+1:02d}')
     os.makedirs(subdir, exist_ok=True)
 
-    # Copy files based on system type
+    #  1. Copy files based on system type
 
-    #  1. MARTINI2-Bilayers
+    #  1.1 MARTINI2-Bilayers
     if config['system_type'] == 'MARTINI2-Bilayers':
         # Copy files from type1 folder to sub directory
         shutil.copytree('systemTypes/MARTINI2_Bilayers', subdir, dirs_exist_ok=True)
@@ -29,9 +29,9 @@ for i in range(config['num_replicas']):
         # Handle unsupported system type
         print(f"Unsupported system type: {config['system_type']}")
 
-    # Copy files based on enhanced sampling method
+    #  2. Copy files based on enhanced sampling method
 
-    #  1. Weighted Ensemble
+    #  2.1 Weighted Ensemble
     if config['enhanced_sampling']['method'] == 'WE':
         # Copy WESTPA1 specific files sub directory
         if config['enhanced_sampling']['implementation'] == 'WESTPA1':
@@ -45,7 +45,7 @@ for i in range(config['num_replicas']):
             shutil.copytree('enhancedSampling/WE/type2', subdir, dirs_exist_ok=True)
 
         else:
-            # Handle unsupported system type
+            # Handle unsupported enahnced sampling implementation
             print(f"Unsupported system type: {config['enhanced_sampling']['implementation']}")
 
     # For future expansions to other enhanced sampling methods
@@ -57,9 +57,9 @@ for i in range(config['num_replicas']):
         # Handle unsupported enhanced sampling method
         print(f"Unsupported enhanced sampling method: {config['enhanced_sampling']['method']}")
 
-    # Copy common template files to sub directory
-    shutil.copy('common/test1.txt', subdir)
-    shutil.copy('common/test2.txt', subdir)
+    #  3. Copy common template files to sub directory
+    shutil.copytree('common/stdMD', subdir, dirs_exist_ok=True)
+    #  shutil.copytree('common/', subdir, dirs_exist_ok=True)
 
     # # Include template python script based on CV input
     # if config['cv']['name'] == 'distance':

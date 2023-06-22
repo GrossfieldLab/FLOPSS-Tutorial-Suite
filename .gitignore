@@ -137,3 +137,4 @@ my_project/
 
 # Ignore postWE folder for now
 postWE_stage/
+config.py
