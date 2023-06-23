@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --partition=gpu -C K20X
+#SBATCH --partition=gpu
 #SBATCH --gres=gpu:2
 #SBATCH --time=120:00:00
 #SBATCH --job-name=WESTPA_RUN
