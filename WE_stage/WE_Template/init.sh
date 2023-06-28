@@ -2,7 +2,6 @@
 #SBATCH --partition=gpu-debug
 #SBATCH --gres=gpu:1
 #SBATCH --time=01:00:00
-#SBATCH --mem=15G
 #SBATCH --job-name=west_init
 #SBATCH --output=west_init.out
 #SBATCH --error=west_init.err

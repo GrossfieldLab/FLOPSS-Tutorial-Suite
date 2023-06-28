@@ -25,7 +25,7 @@ export GMX=$(which gmx)
 ############################## WESTPA & LOOS ###################################
 
 # Activating prebuilt conda env with LOOS and westpa2
-conda activate westpa2
+conda activate westpa2-loos
 
 # Check for LOOS in python3
 if ! python3 -c "import loos"; then
