@@ -115,5 +115,5 @@ cp traj.pdb $WEST_TRAJECTORY_RETURN
 
 
 # Clean up
-rm -f *.mdp *.ndx *.top ref_system_centered.pdb *.gro $TEMP_SYSTEM
+rm -f *.mdp *.ndx *.top ref_system_centered.pdb *.gro $TEMP_SYSTEM traj.* seg_prev.cpt
 rm -rf toppar
