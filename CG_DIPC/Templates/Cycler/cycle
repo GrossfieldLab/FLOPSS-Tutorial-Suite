@@ -1,0 +1,35 @@
+#! /bin/bash
+#
+# Adapted from Tom Romo's slaunch
+#
+
+# Load modules
+module load gromacs/2020.3/b2
+
+
+# Default variables
+# DRIVER=cycler.sh
+# TIMELIMIT="48:00:00"
+# NODES="1"
+# PARTITION="gpu"
+# CPT="8"
+# MEM="16gb"
+DRIVER=cycler.sh
+TIMELIMIT="48:00:00"
+NODES="1"
+PARTITION="gpu"
+CPT="16"
+MEM="16gb"
+
+export PARTITION
+export TIMELIMIT
+export DRIVER
+export MEM
+
+# Read in command line
+META=`pwd | perl -anF/ -e 'print$F[$#F-1],".",$F[$#F];' | sed 's/-/_/g'`
+JOBNAME="$1-$META"
+
+# Submit job
+# sbatch --partition $PARTITION --time $TIMELIMIT -c $CPT -C "V100|K80" --overcommit --gres gpu:$NODES --mem $MEM --job-name $JOBNAME --error $JOBNAME.err --output $JOBNAME.out $DRIVER
+sbatch --partition $PARTITION --time $TIMELIMIT -c $CPT --overcommit --gres gpu:$NODES --mem $MEM --job-name $JOBNAME --error $JOBNAME.err --output $JOBNAME.out $DRIVER
