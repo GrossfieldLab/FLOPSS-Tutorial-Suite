@@ -7,10 +7,10 @@ CURRENT=$PWD
 
 for T in 323K 423K
 do
-    dest=../../production_runs/system_6_${1}/$T
+    dest=../../Initial-Regular-MD/0${1}/$T
     mkdir -p $dest/
 
-    cp /scratch/agrossfi_group/ashlin/systemSize/Templates/Production/${T}/step7_production.mdp $dest/
+    cp ../../Templates/Production/${T}/step7_production.mdp $dest/
     cp step7_production.cpt $dest/
     cp step7_production.gro $dest/
     cp system.top $dest/
@@ -23,7 +23,7 @@ do
     mv step7_production.mdp $1"DIPC.mdp"
     mv step7_production.gro $1"DIPC.gro"
 
-    cp /scratch/agrossfi_group/ashlin/systemSize/Templates/Cycler/cycle* .
+    cp ../../Templates/Cycler/cycle* .
 
     cd $CURRENT
 done
